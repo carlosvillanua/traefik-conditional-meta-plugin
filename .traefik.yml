@@ -1,0 +1,13 @@
+displayName: Conditional Metadata Plugin
+type: middleware
+
+import: github.com/carlos/traefik-conditional-meta-plugin
+
+summary: 'Conditionally adds JSON metadata to responses based on query parameters'
+
+testData:
+  queryParam: "include"
+  queryValue: "meta"
+  metaData:
+    meta:
+      route_name: "test-route"
