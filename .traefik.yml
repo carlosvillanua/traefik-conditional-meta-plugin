@@ -1,7 +1,7 @@
 displayName: Conditional Metadata Plugin
 type: middleware
 
-import: github.com/carlos/traefik-conditional-meta-plugin
+import: github.com/carlos/conditionalmeta
 
 summary: 'Conditionally adds JSON metadata to responses based on query parameters'
 
