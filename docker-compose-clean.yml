@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v3.5
+    command:
+      - --api.dashboard=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      # Local plugin configuration - use your plugin from local directory
+      - --experimental.localPlugins.conditional-meta.moduleName=github.com/carlos/conditionalmeta
+      # Logging
+      - --log.level=INFO
+      - --accesslog=true
+    ports:
+      - "8084:80"
+      - "8085:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mount your plugin directory for local development
+      - ./plugins-local:/plugins-local
+    networks:
+      - traefik
+
+  # JSON API for testing
+  httpbin:
+    image: kennethreitz/httpbin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.httpbin.rule=Host(`httpbin.localhost`)"
+      - "traefik.http.routers.httpbin.middlewares=conditional-meta-test"
+      # Plugin middleware configuration
+      - "traefik.http.middlewares.conditional-meta-test.plugin.conditional-meta.queryParam=include"
+      - "traefik.http.middlewares.conditional-meta-test.plugin.conditional-meta.queryValue=meta"
+      - "traefik.http.middlewares.conditional-meta-test.plugin.conditional-meta.metaData.meta.route_name=v2-translate"
+      - "traefik.http.middlewares.conditional-meta-test.plugin.conditional-meta.metaData.context.environment=development"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    driver: bridge

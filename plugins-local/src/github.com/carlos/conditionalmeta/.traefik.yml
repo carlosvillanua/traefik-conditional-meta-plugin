@@ -1,0 +1,10 @@
+displayName: Conditional Meta
+type: middleware
+import: github.com/carlos/conditionalmeta
+summary: 'Conditionally adds JSON metadata to responses based on query parameters'
+testData:
+  queryParam: include
+  queryValue: meta
+  metaData:
+    meta:
+      route_name: v2-translate
