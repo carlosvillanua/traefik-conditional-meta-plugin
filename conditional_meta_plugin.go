@@ -44,7 +44,19 @@ type conditionalMeta struct {
 
 // New creates and returns a new conditional meta plugin instance.
 func New(_ context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	// Validate configuration
+	if config == nil {
+		return nil, fmt.Errorf("plugin %s: configuration cannot be nil", name)
+	}
+	
+	if next == nil {
+		return nil, fmt.Errorf("plugin %s: next handler cannot be nil", name)
+	}
+	
+	if name == "" {
+		return nil, fmt.Errorf("plugin name cannot be empty")
+	}
+
+	// Set defaults for optional configuration
 	if config.QueryParam == "" {
 		config.QueryParam = "include"
 	}
@@ -92,7 +104,7 @@ func (c *conditionalMeta) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if !isJSONContentType(contentType) {
 		// Not JSON, write as-is
 		if _, err := rw.Write(bodyBytes); err != nil {
-			log.Printf("unable to write body: %v", err)
+			log.Printf("plugin %s: failed to write non-JSON response body: %v", c.name, err)
 		}
 		return
 	}
@@ -100,17 +112,17 @@ func (c *conditionalMeta) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	// Parse and merge JSON
 	modifiedBody, err := c.mergeJSONMetadata(bodyBytes)
 	if err != nil {
-		log.Printf("error merging JSON metadata: %v", err)
+		log.Printf("plugin %s: failed to merge JSON metadata: %v", c.name, err)
 		// Write original body on error
 		if _, err := rw.Write(bodyBytes); err != nil {
-			log.Printf("unable to write original body: %v", err)
+			log.Printf("plugin %s: failed to write original response body after JSON merge error: %v", c.name, err)
 		}
 		return
 	}
 
 	// Write the modified response
 	if _, err := rw.Write(modifiedBody); err != nil {
-		log.Printf("unable to write modified body: %v", err)
+		log.Printf("plugin %s: failed to write modified response body: %v", c.name, err)
 	}
 }
 
@@ -149,7 +161,17 @@ type responseWriter struct {
 }
 
 func (r *responseWriter) WriteHeader(statusCode int) {
+	if r.wroteHeader {
+		return
+	}
 	r.wroteHeader = true
+	
+	// Copy headers from wrapped writer
+	for key, values := range r.ResponseWriter.Header() {
+		for _, value := range values {
+			r.Header().Set(key, value)
+		}
+	}
 	
 	// Remove Content-Length header as we'll modify the body
 	r.ResponseWriter.Header().Del("Content-Length")
