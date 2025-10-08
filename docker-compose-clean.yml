@@ -9,7 +9,7 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       # Local plugin configuration - use your plugin from local directory
-      - --experimental.localPlugins.conditional-meta.moduleName=github.com/carlos/conditionalmeta
+      - --experimental.localPlugins.conditional-meta.moduleName=github.com/carlosvillanua/conditionalmeta
       # Logging
       - --log.level=INFO
       - --accesslog=true

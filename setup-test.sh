@@ -52,7 +52,7 @@ docker network rm traefik 2>/dev/null || true
 
 # Setup plugin directory structure
 echo "📁 Setting up plugin directory structure..."
-mkdir -p plugins-local/src/github.com/carlos/conditionalmeta
+mkdir -p plugins-local/src/github.com/carlosvillanua/conditionalmeta
 
 # Check if required files exist
 REQUIRED_FILES=("conditional_meta_plugin.go" "conditional_meta_plugin_test.go" "go.mod" ".traefik.yml")
@@ -66,19 +66,19 @@ done
 
 # Copy plugin files to expected location
 echo "📋 Copying plugin files..."
-cp conditional_meta_plugin.go plugins-local/src/github.com/carlos/conditionalmeta/ || {
+cp conditional_meta_plugin.go plugins-local/src/github.com/carlosvillanua/conditionalmeta/ || {
     echo "❌ Error: Failed to copy plugin files"
     exit 1
 }
-cp conditional_meta_plugin_test.go plugins-local/src/github.com/carlos/conditionalmeta/ || {
+cp conditional_meta_plugin_test.go plugins-local/src/github.com/carlosvillanua/conditionalmeta/ || {
     echo "❌ Error: Failed to copy test files"
     exit 1
 }
-cp go.mod plugins-local/src/github.com/carlos/conditionalmeta/ || {
+cp go.mod plugins-local/src/github.com/carlosvillanua/conditionalmeta/ || {
     echo "❌ Error: Failed to copy go.mod"
     exit 1
 }
-cp .traefik.yml plugins-local/src/github.com/carlos/conditionalmeta/ || {
+cp .traefik.yml plugins-local/src/github.com/carlosvillanua/conditionalmeta/ || {
     echo "❌ Error: Failed to copy .traefik.yml"
     exit 1
 }
